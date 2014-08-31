@@ -27,12 +27,12 @@ module.exports = function(folder) {
 
     var pad = function(n) {
       n += ''
-      if (n.length < max) return max.slice(n.length) + n
+      if (n.length < max.length) return max.slice(n.length) + n
       return n
     }
 
     var toName = function(i) {
-      return path.join(folder, pad(i))
+      return path.join(folder, pad(i)+'.piece')
     }
 
     that.read = function(index, range, cb) {
