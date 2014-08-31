@@ -11,7 +11,8 @@ npm install torrent-individual-piece-storage
 ``` js
 var torrents = require('torrent-stream')
 var engine = torrents('magnet:some-magnet-link', {
-  storage: require('torrent-individual-piece-storage')('/tmp')
+  storage: require('torrent-individual-piece-storage'),
+  path: 'some-folder'
 })
 ```
 
