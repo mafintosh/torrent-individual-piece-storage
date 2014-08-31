@@ -1,6 +1,6 @@
 {
   "name": "torrent-individual-piece-storage",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "torrent-stream storage that stores each piece in individual files",
   "main": "index.js",
   "dependencies": {
