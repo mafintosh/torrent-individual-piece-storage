@@ -47,6 +47,7 @@ module.exports = function(torrent, opts) {
 
     fs.stat(name, function(err, stat) {
       if (err) return cb(err)
+      if (!stat.size) return cb(new Error('Invalid length'))
       read(name, offset, stat.size - offset, cb)
     })
   }
