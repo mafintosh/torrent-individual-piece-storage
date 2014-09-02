@@ -1,6 +1,7 @@
 var fs = require('fs')
 var path = require('path')
 var mkdirp = require('mkdirp')
+var LRU = require('lru-cache')
 
 var noop = function() {}
 
@@ -17,10 +18,9 @@ var read = function(file, offset, length, cb) {
 }
 
 module.exports = function(torrent, opts) {
-  var folder = opts.path || path.join(torrent.infoHash)
-  mkdirp.sync(folder)
-
   var that = {}
+  var folder = opts.path || path.join(torrent.infoHash)
+  var cache = LRU(200)
   var max = Array(Math.ceil(Math.log(torrent.pieces.length)/Math.log(10))+1).join('0')
 
   var pad = function(n) {
@@ -30,7 +30,9 @@ module.exports = function(torrent, opts) {
   }
 
   var toName = function(i) {
-    return path.join(folder, pad(i)+'.piece')
+    var n = pad(i)
+    if (n.length > 2) n = path.join(n.slice(0, 2), n.slice(2))
+    return path.join(folder, n+'.piece')
   }
 
   that.read = function(index, range, cb) {
@@ -52,8 +54,22 @@ module.exports = function(torrent, opts) {
     })
   }
 
+  var mkdir = function(dir, cb) {
+    if (cache.get(dir)) return cb()
+    mkdirp(dir, function(err) {
+      if (err) return cb(err)
+      cache.set(dir, true)
+      cb()
+    })
+  }
+
   that.write = function(index, buf, cb) {
-    fs.writeFile(toName(index), buf, cb || noop)
+    if (!cb) cb = noop
+    var n = toName(index)
+    mkdir(path.dirname(n), function(err) {
+      if (err) return cb(err)
+      fs.writeFile(n, buf, cb)
+    })
   }
 
   that.remove = function(cb) {

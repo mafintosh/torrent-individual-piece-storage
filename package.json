@@ -4,6 +4,7 @@
   "description": "torrent-stream storage that stores each piece in individual files",
   "main": "index.js",
   "dependencies": {
+    "lru-cache": "^2.5.0",
     "mkdirp": "^0.5.0"
   },
   "devDependencies": {},
